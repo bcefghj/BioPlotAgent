@@ -1,0 +1,17 @@
+gene,group,expression,se
+TP53,Control,24.29,3.64
+TP53,Treatment,31.1,4.66
+BRCA1,Control,11.48,1.72
+BRCA1,Treatment,31.26,4.69
+EGFR,Control,20.36,3.05
+EGFR,Treatment,38.99,5.85
+MYC,Control,10.57,1.59
+MYC,Treatment,4.13,0.62
+KRAS,Control,39.57,5.94
+KRAS,Treatment,99.52,14.93
+PTEN,Control,13.5,2.03
+PTEN,Treatment,15.47,2.32
+VEGFA,Control,13.07,1.96
+VEGFA,Treatment,38.8,5.82
+HIF1A,Control,35.56,5.33
+HIF1A,Treatment,57.27,8.59

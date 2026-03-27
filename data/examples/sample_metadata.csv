@@ -1,0 +1,13 @@
+sample,group,batch
+Control_1,Control,Batch1
+Control_2,Control,Batch1
+Control_3,Control,Batch1
+Control_4,Control,Batch2
+Control_5,Control,Batch2
+Control_6,Control,Batch2
+Treatment_7,Treatment,Batch1
+Treatment_8,Treatment,Batch1
+Treatment_9,Treatment,Batch1
+Treatment_10,Treatment,Batch2
+Treatment_11,Treatment,Batch2
+Treatment_12,Treatment,Batch2

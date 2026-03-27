@@ -1,0 +1,31 @@
+# Environment
+.env
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Output
+output/
+*.png
+*.jpg
+*.pdf
+!assets/*.png
+
+# Jupyter
+.ipynb_checkpoints/
