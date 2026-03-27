@@ -15,11 +15,16 @@ import matplotlib.pyplot as plt
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from config import SUPPORTED_PLOTS, PLOT_ICONS, MINIMAX_API_KEY
+from config import SUPPORTED_PLOTS, PLOT_ICONS, PLOT_CATEGORIES, MINIMAX_API_KEY
 from plotting import (
     plot_volcano, plot_heatmap, plot_pca, plot_survival,
     plot_go_enrichment, plot_bar, plot_box, plot_venn,
-    plot_ma, plot_dot, save_figure, get_example_data_path,
+    plot_ma, plot_dot, plot_violin, plot_scatter,
+    plot_correlation_heatmap, plot_forest, plot_roc,
+    plot_sankey, plot_waterfall, plot_lollipop, plot_ridge,
+    plot_upset, plot_pie, plot_density, plot_manhattan,
+    plot_radar, plot_stacked_bar,
+    save_figure, get_example_data_path,
 )
 from tutorials import TUTORIALS, get_tutorial
 
@@ -193,11 +198,12 @@ def download_button(fig, filename="bioplot"):
 # ──────────────────────────────────────────────
 def render_quick_plot():
     st.markdown('<div class="main-header"><h1>🎨 快速绘图</h1></div>', unsafe_allow_html=True)
-    st.markdown("选择图表类型，上传数据或使用示例数据，一键生成专业图表！")
+    st.markdown("选择图表类型，上传数据或使用示例数据，一键生成专业图表！**支持 25 种图表！**")
 
+    cat = st.selectbox("选择类别", list(PLOT_CATEGORIES.keys()))
     plot_type = st.selectbox(
         "选择图表类型",
-        list(SUPPORTED_PLOTS.keys()),
+        PLOT_CATEGORIES[cat],
         format_func=lambda x: f"{PLOT_ICONS.get(x, '')} {SUPPORTED_PLOTS[x]}",
     )
 
@@ -240,6 +246,21 @@ def render_quick_plot():
                 "venn": "venn_data.csv",
                 "ma_plot": "deg_example.csv",
                 "dot": "go_enrichment.csv",
+                "violin": "bar_data.csv",
+                "scatter": "scatter_data.csv",
+                "correlation_heatmap": "expression_matrix.csv",
+                "forest": "forest_data.csv",
+                "roc": "roc_data.csv",
+                "sankey": "sankey_data.csv",
+                "waterfall": "waterfall_data.csv",
+                "lollipop": "go_enrichment.csv",
+                "ridge": "bar_data.csv",
+                "upset": "venn_data.csv",
+                "pie": "go_enrichment.csv",
+                "density": "bar_data.csv",
+                "manhattan": "manhattan_data.csv",
+                "radar": "radar_data.csv",
+                "stacked_bar": "stacked_bar_data.csv",
             }
             data = load_example_data(example_map.get(plot_type, ""))
             if data is not None:
@@ -382,35 +403,168 @@ def get_plot_params(plot_type, data):
         params["color_col"] = st.selectbox("气泡颜色", numeric_cols, index=min(2, len(numeric_cols) - 1))
         params["title"] = st.text_input("标题", "富集分析气泡图")
 
+    elif plot_type == "violin":
+        params["value_col"] = st.selectbox("数值列", numeric_cols, index=0)
+        params["group_col"] = st.selectbox("分组列", cols, index=cols.index("group") if "group" in cols else 0)
+        gene_opts = ["无"] + cols
+        params["gene_col"] = st.selectbox("基因列（可选）", gene_opts, index=gene_opts.index("gene") if "gene" in gene_opts else 0)
+        if params["gene_col"] == "无":
+            params["gene_col"] = None
+        params["inner"] = st.selectbox("内部样式", ["box", "quartile", "point", "stick"], index=0)
+        params["title"] = st.text_input("标题", "基因表达小提琴图")
+
+    elif plot_type == "scatter":
+        params["x_col"] = st.selectbox("X轴", numeric_cols, index=0)
+        params["y_col"] = st.selectbox("Y轴", numeric_cols, index=min(1, len(numeric_cols) - 1))
+        grp_opts = ["无"] + cols
+        params["group_col"] = st.selectbox("分组列（可选）", grp_opts, index=grp_opts.index("group") if "group" in grp_opts else 0)
+        if params["group_col"] == "无":
+            params["group_col"] = None
+        params["show_reg"] = st.checkbox("显示回归线", value=True)
+        params["show_corr"] = st.checkbox("显示相关系数", value=True)
+        params["title"] = st.text_input("标题", "基因表达散点图")
+
+    elif plot_type == "correlation_heatmap":
+        params["method"] = st.selectbox("相关性方法", ["pearson", "spearman", "kendall"])
+        params["annot"] = st.checkbox("显示数值", value=len(data.select_dtypes(include=[np.number]).columns) <= 20)
+        params["mask_upper"] = st.checkbox("隐藏上三角", value=True)
+        params["title"] = st.text_input("标题", "相关性热图")
+
+    elif plot_type == "forest":
+        params["label_col"] = st.selectbox("变量名列", cols, index=0)
+        params["estimate_col"] = st.selectbox("效应值列 (HR/OR)", numeric_cols, index=0)
+        params["lower_col"] = st.selectbox("CI下限列", numeric_cols, index=min(1, len(numeric_cols) - 1))
+        params["upper_col"] = st.selectbox("CI上限列", numeric_cols, index=min(2, len(numeric_cols) - 1))
+        pv_opts = ["无"] + cols
+        params["pvalue_col"] = st.selectbox("P-value列（可选）", pv_opts, index=pv_opts.index("pvalue") if "pvalue" in pv_opts else 0)
+        if params["pvalue_col"] == "无":
+            params["pvalue_col"] = None
+        params["log_scale"] = st.checkbox("对数坐标", value=True)
+        params["title"] = st.text_input("标题", "森林图 (Forest Plot)")
+
+    elif plot_type == "roc":
+        params["true_col"] = st.selectbox("真实标签列", cols, index=cols.index("true_label") if "true_label" in cols else 0)
+        all_nc = [c for c in numeric_cols if c != params["true_col"]]
+        params["score_cols"] = st.multiselect("评分列（可多选）", all_nc, default=all_nc[:3])
+        params["title"] = st.text_input("标题", "ROC 曲线")
+
+    elif plot_type == "sankey":
+        params["source_col"] = st.selectbox("源节点列", cols, index=0)
+        params["target_col"] = st.selectbox("目标节点列", cols, index=min(1, len(cols) - 1))
+        params["value_col"] = st.selectbox("数值列", numeric_cols, index=0)
+        params["title"] = st.text_input("标题", "桑基图")
+
+    elif plot_type == "waterfall":
+        params["value_col"] = st.selectbox("数值列", numeric_cols, index=0)
+        lbl_opts = ["无"] + cols
+        params["label_col"] = st.selectbox("标签列（可选）", lbl_opts, index=0)
+        if params["label_col"] == "无":
+            params["label_col"] = None
+        grp_opts2 = ["无"] + cols
+        params["group_col"] = st.selectbox("分组列（可选）", grp_opts2, index=grp_opts2.index("group") if "group" in grp_opts2 else 0)
+        if params["group_col"] == "无":
+            params["group_col"] = None
+        params["sort"] = st.checkbox("按值排序", value=True)
+        params["title"] = st.text_input("标题", "瀑布图")
+
+    elif plot_type == "lollipop":
+        non_nc = data.select_dtypes(exclude=[np.number]).columns.tolist()
+        params["label_col"] = st.selectbox("标签列", non_nc if non_nc else cols, index=0)
+        params["value_col"] = st.selectbox("数值列", numeric_cols, index=0)
+        params["horizontal"] = st.checkbox("水平显示", value=True)
+        params["sort"] = st.checkbox("排序", value=True)
+        params["title"] = st.text_input("标题", "棒棒糖图")
+
+    elif plot_type == "ridge":
+        params["value_col"] = st.selectbox("数值列", numeric_cols, index=0)
+        non_nc = data.select_dtypes(exclude=[np.number]).columns.tolist()
+        params["group_col"] = st.selectbox("分组列", non_nc if non_nc else cols, index=0)
+        params["title"] = st.text_input("标题", "山脊图")
+
+    elif plot_type == "upset":
+        st.info("UpSet Plot 使用与韦恩图相同的数据格式：每列为一个集合")
+        params["title"] = st.text_input("标题", "UpSet Plot")
+
+    elif plot_type == "pie":
+        non_nc = data.select_dtypes(exclude=[np.number]).columns.tolist()
+        params["label_col"] = st.selectbox("标签列", non_nc if non_nc else cols, index=0)
+        params["value_col"] = st.selectbox("数值列", numeric_cols, index=0)
+        params["donut"] = st.checkbox("环形图样式", value=False)
+        params["top_n"] = st.slider("展示前N项", 5, 20, 10)
+        params["title"] = st.text_input("标题", "比例分布图")
+
+    elif plot_type == "density":
+        params["value_col"] = st.selectbox("数值列", numeric_cols, index=0)
+        grp_opts = ["无"] + cols
+        params["group_col"] = st.selectbox("分组列（可选）", grp_opts, index=grp_opts.index("group") if "group" in grp_opts else 0)
+        if params["group_col"] == "无":
+            params["group_col"] = None
+        params["fill"] = st.checkbox("填充颜色", value=True)
+        params["title"] = st.text_input("标题", "密度分布图")
+
+    elif plot_type == "manhattan":
+        params["chr_col"] = st.selectbox("染色体列", cols, index=cols.index("chr") if "chr" in cols else 0)
+        params["pos_col"] = st.selectbox("位置列", cols, index=cols.index("pos") if "pos" in cols else 0)
+        params["pvalue_col"] = st.selectbox("P-value列", cols, index=cols.index("pvalue") if "pvalue" in cols else 0)
+        gene_opts = ["无"] + cols
+        params["gene_col"] = st.selectbox("基因/SNP标签列", gene_opts, index=gene_opts.index("snp") if "snp" in gene_opts else 0)
+        if params["gene_col"] == "无":
+            params["gene_col"] = None
+        params["title"] = st.text_input("标题", "曼哈顿图")
+
+    elif plot_type == "radar":
+        params["label_col"] = st.selectbox("标签列", cols, index=0)
+        params["value_cols"] = st.multiselect("数值列（多选）", numeric_cols, default=numeric_cols[:6])
+        params["fill"] = st.checkbox("填充", value=True)
+        params["title"] = st.text_input("标题", "雷达图")
+
+    elif plot_type == "stacked_bar":
+        non_nc = data.select_dtypes(exclude=[np.number]).columns.tolist()
+        params["x_col"] = st.selectbox("X轴（样本/类别）", non_nc if non_nc else cols, index=0)
+        params["value_cols"] = st.multiselect("数值列（多选）", numeric_cols, default=numeric_cols[:6])
+        params["normalize"] = st.checkbox("百分比标准化", value=False)
+        params["horizontal"] = st.checkbox("水平显示", value=False)
+        params["title"] = st.text_input("标题", "堆叠柱状图")
+
     return params
 
 
 def generate_plot(plot_type, data, params):
     """Call the appropriate plotting function."""
-    if plot_type == "volcano":
-        return plot_volcano(data, **params)
-    elif plot_type == "heatmap":
-        return plot_heatmap(data, **params)
-    elif plot_type == "pca":
-        return plot_pca(data, **params)
-    elif plot_type == "survival":
-        return plot_survival(data, **params)
-    elif plot_type == "go_enrichment":
-        return plot_go_enrichment(data, **params)
-    elif plot_type == "bar":
-        return plot_bar(data, **params)
-    elif plot_type == "box":
-        return plot_box(data, **params)
-    elif plot_type == "venn":
-        sets = {}
-        for col in data.columns:
-            sets[col] = set(data[col].dropna().astype(str))
-        title = params.get("title", "韦恩图")
-        return plot_venn(sets, title=title)
-    elif plot_type == "ma_plot":
-        return plot_ma(data, **params)
-    elif plot_type == "dot":
-        return plot_dot(data, **params)
+    dispatch = {
+        "volcano": lambda: plot_volcano(data, **params),
+        "heatmap": lambda: plot_heatmap(data, **params),
+        "pca": lambda: plot_pca(data, **params),
+        "survival": lambda: plot_survival(data, **params),
+        "go_enrichment": lambda: plot_go_enrichment(data, **params),
+        "bar": lambda: plot_bar(data, **params),
+        "box": lambda: plot_box(data, **params),
+        "ma_plot": lambda: plot_ma(data, **params),
+        "dot": lambda: plot_dot(data, **params),
+        "violin": lambda: plot_violin(data, **params),
+        "scatter": lambda: plot_scatter(data, **params),
+        "correlation_heatmap": lambda: plot_correlation_heatmap(data, **params),
+        "forest": lambda: plot_forest(data, **params),
+        "roc": lambda: plot_roc(data, **params),
+        "sankey": lambda: plot_sankey(data, **params),
+        "waterfall": lambda: plot_waterfall(data, **params),
+        "lollipop": lambda: plot_lollipop(data, **params),
+        "ridge": lambda: plot_ridge(data, **params),
+        "density": lambda: plot_density(data, **params),
+        "pie": lambda: plot_pie(data, **params),
+        "manhattan": lambda: plot_manhattan(data, **params),
+        "radar": lambda: plot_radar(data, **params),
+        "stacked_bar": lambda: plot_stacked_bar(data, **params),
+    }
+
+    if plot_type == "venn":
+        sets = {col: set(data[col].dropna().astype(str)) for col in data.columns}
+        return plot_venn(sets, title=params.get("title", "韦恩图"))
+    elif plot_type == "upset":
+        sets = {col: set(data[col].dropna().astype(str)) for col in data.columns}
+        return plot_upset(sets, title=params.get("title", "UpSet Plot"))
+    elif plot_type in dispatch:
+        return dispatch[plot_type]()
     else:
         raise ValueError(f"未知图表类型: {plot_type}")
 

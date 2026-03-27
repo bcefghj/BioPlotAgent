@@ -7,17 +7,26 @@ BioPlotAgent 是一个基于 AI 的生物信息学可视化工具，集成了 **
 ## 📸 效果展示
 
 <p align="center">
-  <img src="assets/showcase/01_volcano_plot.png" width="45%" alt="火山图"/>
+  <img src="assets/showcase/01_volcano.png" width="45%" alt="火山图"/>
   <img src="assets/showcase/02_heatmap.png" width="45%" alt="热图"/>
 </p>
 <p align="center">
-  <img src="assets/showcase/04_survival_curve.png" width="45%" alt="生存分析"/>
-  <img src="assets/showcase/05_go_enrichment_bar.png" width="45%" alt="GO富集"/>
+  <img src="assets/showcase/04_survival.png" width="45%" alt="生存分析"/>
+  <img src="assets/showcase/15_roc.png" width="45%" alt="ROC曲线"/>
 </p>
 <p align="center">
-  <img src="assets/showcase/03_pca_plot.png" width="30%" alt="PCA"/>
-  <img src="assets/showcase/07_bar_plot.png" width="30%" alt="柱状图"/>
-  <img src="assets/showcase/09_venn_diagram.png" width="30%" alt="韦恩图"/>
+  <img src="assets/showcase/14_forest.png" width="45%" alt="森林图"/>
+  <img src="assets/showcase/23_manhattan.png" width="45%" alt="曼哈顿图"/>
+</p>
+<p align="center">
+  <img src="assets/showcase/16_sankey.png" width="30%" alt="桑基图"/>
+  <img src="assets/showcase/24_radar.png" width="30%" alt="雷达图"/>
+  <img src="assets/showcase/25_stacked_bar.png" width="30%" alt="堆叠柱状图"/>
+</p>
+<p align="center">
+  <img src="assets/showcase/05_go_bar.png" width="30%" alt="GO富集"/>
+  <img src="assets/showcase/17_waterfall.png" width="30%" alt="瀑布图"/>
+  <img src="assets/showcase/09_venn.png" width="30%" alt="韦恩图"/>
 </p>
 
 ## ✨ 核心功能
@@ -40,20 +49,64 @@ BioPlotAgent 是一个基于 AI 的生物信息学可视化工具，集成了 **
 - "边学边练"的互动学习体验
 - 从理解数据到解读结果的完整指导
 
-## 📊 支持的图表类型
+## 📊 支持 25 种图表类型
 
+### 差异表达分析
 | 图表 | 说明 | 典型应用 |
 |------|------|----------|
 | 🌋 火山图 | 展示差异表达基因 | RNA-seq DEG 分析 |
+| 📉 MA Plot | 表达量与变化关系 | DESeq2 质控 |
 | 🔥 热图 | 展示表达模式 | 基因表达谱聚类 |
+
+### 降维与聚类
+| 图表 | 说明 | 典型应用 |
+|------|------|----------|
 | 📊 PCA图 | 样本差异降维展示 | 样本质控、批次效应 |
+| 🔗 相关性热图 | 基因/样本间相关系数 | 共表达分析 |
+
+### 临床与生存分析
+| 图表 | 说明 | 典型应用 |
+|------|------|----------|
 | 📈 生存曲线 | Kaplan-Meier 分析 | 预后分析、生物标志物 |
+| 🌲 森林图 | 多变量回归结果 | Cox回归、荟萃分析 |
+| 🎯 ROC 曲线 | 诊断模型评估 | 生物标志物诊断价值 |
+
+### 富集分析
+| 图表 | 说明 | 典型应用 |
+|------|------|----------|
 | 🧬 GO富集图 | 功能富集分析 | 差异基因功能注释 |
+| 🫧 气泡图 | 多维数据展示 | KEGG/GO 通路展示 |
+
+### 基础统计图表
+| 图表 | 说明 | 典型应用 |
+|------|------|----------|
 | 📊 柱状图 | 表达量对比 | RT-qPCR 验证 |
 | 📦 箱线图 | 数据分布展示 | 组间差异比较 |
+| 🎻 小提琴图 | 分布形态+数据点 | 单细胞表达分析 |
+| ⚡ 散点图 | 相关性+回归分析 | 基因共表达 |
+| 🌊 密度图 | 概率密度分布 | 表达量分布对比 |
+| ⛰️ 山脊图 | 多组分布对比 | 多基因表达对比 |
+| 🥧 饼图/环形图 | 比例分布 | 样本组成分析 |
+| 📚 堆叠柱状图 | 组成比例 | 免疫细胞浸润 |
+| 🍭 棒棒糖图 | 排序展示 | GO术语排名 |
+
+### 集合分析
+| 图表 | 说明 | 典型应用 |
+|------|------|----------|
 | ⭕ 韦恩图 | 集合重叠关系 | 多组学交叉分析 |
-| 📉 MA Plot | 表达量与变化关系 | DESeq2 质控 |
-| 🫧 气泡图 | 多维数据展示 | KEGG/GO 通路展示 |
+| 🔀 UpSet Plot | 多组集合交叉 | 替代韦恩图（>3组） |
+
+### 基因组与GWAS
+| 图表 | 说明 | 典型应用 |
+|------|------|----------|
+| 🏙️ 曼哈顿图 | 全基因组关联分析 | GWAS、eQTL |
+
+### 关系与流程
+| 图表 | 说明 | 典型应用 |
+|------|------|----------|
+| 🔄 桑基图 | 分类流向关系 | 通路-基因变化 |
+| 🌊 瀑布图 | 排序变化量 | 肿瘤治疗响应 |
+| 🕸️ 雷达图 | 多维对比 | 肿瘤表型对比 |
 
 ## 🚀 快速开始
 
