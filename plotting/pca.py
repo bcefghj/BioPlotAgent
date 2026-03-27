@@ -51,10 +51,16 @@ def plot_pca(
 
     numeric_df = df.select_dtypes(include=[np.number])
 
-    if numeric_df.shape[0] < numeric_df.shape[1]:
+    # Auto-transpose only when no group info is given and rows < cols
+    # (likely gene-x-sample matrix that needs transposing to sample-x-gene)
+    if group_info is None and numeric_df.shape[0] > numeric_df.shape[1]:
+        pass  # already sample x gene
+    elif group_info is not None:
+        pass  # user provided group info, trust the row layout
+    elif numeric_df.shape[0] < numeric_df.shape[1]:
         numeric_df = numeric_df.T
         if sample_names is None:
-            sample_names = data.columns[df.columns.isin(numeric_df.index) | True]
+            sample_names = numeric_df.index.values
 
     scaler = StandardScaler()
     scaled_data = scaler.fit_transform(numeric_df)

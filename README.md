@@ -4,6 +4,22 @@
 
 BioPlotAgent 是一个基于 AI 的生物信息学可视化工具，集成了 **智能绘图**、**AI 对话** 和 **互动教学** 三大功能。无论你是刚接触生物信息学的小白，还是需要快速出图的研究者，都能轻松上手。
 
+## 📸 效果展示
+
+<p align="center">
+  <img src="assets/showcase/01_volcano_plot.png" width="45%" alt="火山图"/>
+  <img src="assets/showcase/02_heatmap.png" width="45%" alt="热图"/>
+</p>
+<p align="center">
+  <img src="assets/showcase/04_survival_curve.png" width="45%" alt="生存分析"/>
+  <img src="assets/showcase/05_go_enrichment_bar.png" width="45%" alt="GO富集"/>
+</p>
+<p align="center">
+  <img src="assets/showcase/03_pca_plot.png" width="30%" alt="PCA"/>
+  <img src="assets/showcase/07_bar_plot.png" width="30%" alt="柱状图"/>
+  <img src="assets/showcase/09_venn_diagram.png" width="30%" alt="韦恩图"/>
+</p>
+
 ## ✨ 核心功能
 
 ### 🎨 快速绘图模式
